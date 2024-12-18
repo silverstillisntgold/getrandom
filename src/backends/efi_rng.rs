@@ -72,10 +72,11 @@ fn init() -> Result<NonNull<rng::Protocol>, Error> {
 
         // Try to use the acquired protocol handle
         let mut buf = [0u8; 8];
+        let mut alg_guid = rng::ALGORITHM_RAW;
         let ret = unsafe {
             ((*protocol.as_ptr()).get_rng)(
                 protocol.as_ptr(),
-                ptr::null_mut(),
+                &mut alg_guid,
                 buf.len(),
                 buf.as_mut_ptr(),
             )
@@ -97,10 +98,11 @@ pub fn fill_inner(dest: &mut [MaybeUninit<u8>]) -> Result<(), Error> {
         None => init()?,
     };
 
+    let mut alg_guid = rng::ALGORITHM_RAW;
     let ret = unsafe {
         ((*protocol.as_ptr()).get_rng)(
             protocol.as_ptr(),
-            ptr::null_mut(),
+            &mut alg_guid,
             dest.len(),
             dest.as_mut_ptr().cast::<u8>(),
         )

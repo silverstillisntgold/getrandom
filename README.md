@@ -82,7 +82,7 @@ of randomness based on their specific needs:
 | `linux_rustix`    | Linux, Android       | `*‑linux‑*`              | Same as `linux_getrandom`, but uses [`rustix`] instead of `libc`.
 | `rdrand`          | x86, x86-64          | `x86_64-*`, `i686-*`     | [`RDRAND`] instruction
 | `rndr`            | AArch64              | `aarch64-*`              | [`RNDR`] register
-| `efi_rng`         | UEFI                 | `*-unknown‑uefi`         | [`EFI_RNG_PROTOCOL`] (requires `std` and Nigthly compiler)
+| `efi_rng`         | UEFI                 | `*-unknown‑uefi`         | [`EFI_RNG_PROTOCOL`] with `EFI_RNG_ALGORITHM_RAW` (requires `std` and Nigthly compiler)
 | `esp_idf`         | ESP-IDF              | `*‑espidf`               | [`esp_fill_random`]. WARNING: can return low-quality entropy without proper hardware configuration!
 | `wasm_js`         | Web Browser, Node.js | `wasm32‑unknown‑unknown`, `wasm32v1-none` | [`Crypto.getRandomValues`]
 | `custom`          | All targets          | `*`                      | User-provided custom implementation (see [custom backend])
