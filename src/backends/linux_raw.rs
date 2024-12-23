@@ -1,6 +1,5 @@
-//! Implementation for Linux / Android without `/dev/urandom` fallback
+//! Implementation for Linux / Android using `asm!`-based syscalls.
 use crate::{Error, MaybeUninit};
-// use rustix::rand::{getrandom_uninit, GetRandomFlags};
 
 pub use crate::util::{inner_u32, inner_u64};
 
