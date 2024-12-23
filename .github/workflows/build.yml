@@ -148,9 +148,10 @@ jobs:
         ]
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@nightly
+      - uses: dtolnay/rust-toolchain@master
         with:
-          targets: ${{ matrix.target }}
+          toolchain: nightly-2024-10-24
+          components: rust-src
       - env:
           RUSTFLAGS: -Dwarnings --cfg getrandom_backend="linux_raw"
         run: cargo build -Zbuild-std=core --target=${{ matrix.target }}
