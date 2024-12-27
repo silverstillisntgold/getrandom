@@ -13,6 +13,7 @@ unsafe fn getrandom_syscall(buf: *mut u8, buflen: usize, flags: u32) -> isize {
     // Based on `rustix` and `linux-raw-sys` code.
     cfg_if! {
         if #[cfg(target_arch = "arm")] {
+            const __NR_getrandom: u32 = 384;
             // In thumb-mode, r7 is the frame pointer and is not permitted to be used in
             // an inline asm operand, so we have to use a different register and copy it
             // into r7 inside the inline asm.
@@ -21,9 +22,10 @@ unsafe fn getrandom_syscall(buf: *mut u8, buflen: usize, flags: u32) -> isize {
             // bother with it.
             core::arch::asm!(
                 "mov {tmp}, r7",
-                "mov r7, #384", // __NR_getrandom = 384
+                "mov r7, {nr}",
                 "svc 0",
                 "mov r7, {tmp}",
+                nr = const __NR_getrandom,
                 tmp = out(reg) _,
                 inlateout("r0") buf => r0,
                 in("r1") buflen,
