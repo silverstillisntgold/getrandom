@@ -25,23 +25,29 @@ use core::mem::MaybeUninit;
 
 pub use crate::util::{inner_u32, inner_u64};
 
-// Binding to the Windows.Win32.Security.Cryptography.ProcessPrng API. As
-// bcryptprimitives.dll lacks an import library, we use the windows-targets
-// crate to link to it. The link! macro always declares external functions
-// as pub, so we wrap it in a private module to keep it local.
-//
-// TODO(MSRV 1.71): Migrate to linking as raw-dylib directly.
-// https://github.com/joboet/rust/blob/5c1c72572479afe98734d5f78fa862abe662c41a/library/std/src/sys/pal/windows/c.rs#L119
-// https://github.com/microsoft/windows-rs/blob/0.60.0/crates/libs/targets/src/lib.rs
-mod internal {
-    windows_targets::link!("bcryptprimitives.dll" "system" fn ProcessPrng(pbdata: *mut u8, cbdata: usize) -> i32);
+// Binding to the Windows.Win32.Security.Cryptography.ProcessPrng API.
+#[cfg_attr(
+    target_arch = "x86",
+    link(
+        name = "bcryptprimitives",
+        kind = "raw-dylib",
+        import_name_type = "undecorated"
+    )
+)]
+#[cfg_attr(
+    not(target_arch = "x86"),
+    link(name = "bcryptprimitives", kind = "raw-dylib")
+)]
+extern "system" {
+    fn ProcessPrng(pbdata: *mut u8, cbdata: usize) -> i32;
 }
 
 pub fn fill_inner(dest: &mut [MaybeUninit<u8>]) -> Result<(), Error> {
     // Since Windows 10, calls to the user-mode RNG are guaranteed
-    // to never fail during runtime (rare windows W).
+    // to never fail during runtime (rare windows W); this function
+    // will only ever return success.
     // See the bottom of page 6 of the aforementioned Windows RNG
     // whitepaper for more information.
-    unsafe { internal::ProcessPrng(dest.as_mut_ptr().cast::<u8>(), dest.len()) };
+    unsafe { ProcessPrng(dest.as_mut_ptr().cast(), dest.len()) };
     Ok(())
 }

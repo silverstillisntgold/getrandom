@@ -2,7 +2,8 @@
 name = "getrandom"
 version = "0.3.0-rc.0"
 edition = "2021"
-rust-version = "1.63" # Sync tests.yml and README.md.
+# Sync tests.yml and README.md.
+rust-version = "1.71"
 authors = ["The Rand Project Developers"]
 license = "MIT OR Apache-2.0"
 description = "A small cross-platform library for retrieving random data from system source"
@@ -53,10 +54,6 @@ libc = { version = "0.2.154", default-features = false }
 # wasi (0.2 only)
 [target.'cfg(all(target_arch = "wasm32", target_os = "wasi", target_env = "p2"))'.dependencies]
 wasi = { version = "0.13", default-features = false }
-
-# windows7
-[target.'cfg(all(windows, not(target_vendor = "win7")))'.dependencies]
-windows-targets = "0.52"
 
 # wasm_js
 [target.'cfg(all(getrandom_backend = "wasm_js", target_arch = "wasm32", any(target_os = "unknown", target_os = "none")))'.dependencies]
